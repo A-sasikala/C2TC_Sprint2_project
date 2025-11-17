@@ -59,6 +59,9 @@ const EmployeeList = () => {
                 <td>{emp.empAge}</td>
                 <td>
                   <button onClick={() => deleteEmployee(emp.empId)}>Delete</button>
+                  <Link to={`/edit/${emp.empId}`}>
+                   <button>Edit</button>
+                  </Link>
                 </td>
               </tr>
             ))

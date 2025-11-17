@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./EmployeeForm.css";
-
 const EmployeeForm = () => {
   const [employee, setEmployee] = useState({
     empId: "",
@@ -15,6 +14,22 @@ const EmployeeForm = () => {
   });
 
   const navigate = useNavigate();
+  const { id } = useParams(); // get id from URL (edit mode)
+
+  useEffect(() => {
+    if (id) {
+      loadEmployee(); // fetch old data & show in form
+    }
+  }, [id]);
+
+  const loadEmployee = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/employeeservice/${id}`);
+      setEmployee(response.data);
+    } catch (error) {
+      alert("Failed to load employee");
+    }
+  };
 
   const handleChange = (e) => {
     setEmployee({ ...employee, [e.target.name]: e.target.value });
@@ -22,28 +37,89 @@ const EmployeeForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await axios.post("http://localhost:8080/employeeservice/add", employee);
-      alert("Employee added successfully!");
-      navigate("/");
+      if (id) {
+        // UPDATE
+        await axios.put("http://localhost:8080/employeeservice/update", employee);
+        alert("Employee Updated Successfully!");
+      } else {
+        // ADD NEW
+        await axios.post("http://localhost:8080/employeeservice/add", employee);
+        alert("Employee Added Successfully!");
+      }
+
+      navigate("/"); // go to list page
+
     } catch (error) {
-      console.error("Error adding employee:", error);
-      alert("Failed to add employee!");
+      alert("Failed!");
     }
   };
 
   return (
     <div>
-      <h2>Add Employee</h2>
+      <h2>{id ? "Edit Employee" : "Add Employee"}</h2>
+
       <form onSubmit={handleSubmit}>
-        <input name="empId" placeholder="Employee ID" value={employee.empId} onChange={handleChange} required />
-        <input name="empName" placeholder="Name" value={employee.empName} onChange={handleChange} required />
-        <input name="empEmail" placeholder="Email" value={employee.empEmail} onChange={handleChange} required />
-        <input name="empDepartment" placeholder="Department" value={employee.empDepartment} onChange={handleChange} required />
-        <input name="empSalary" placeholder="Salary" type="number" value={employee.empSalary} onChange={handleChange} required />
-        <input name="empDesignation" placeholder="Designation" value={employee.empDesignation} onChange={handleChange} required />
-        <input name="empAge" placeholder="Age" type="number" value={employee.empAge} onChange={handleChange} required />
-        <button type="submit">Save</button>
+        
+        <input
+          type="text"
+          name="empId"
+          value={employee.empId}
+          onChange={handleChange}
+          placeholder="Employee ID"
+          disabled={id} // ID cannot change in edit mode
+        />
+
+        <input
+          type="text"
+          name="empName"
+          value={employee.empName}
+          onChange={handleChange}
+          placeholder="Employee Name"
+        />
+
+        <input
+          type="email"
+          name="empEmail"
+          value={employee.empEmail}
+          onChange={handleChange}
+          placeholder="Email"
+        />
+
+        <input
+          type="text"
+          name="empDepartment"
+          value={employee.empDepartment}
+          onChange={handleChange}
+          placeholder="Department"
+        />
+
+        <input
+          type="number"
+          name="empSalary"
+          value={employee.empSalary}
+          onChange={handleChange}
+          placeholder="Salary"
+        />
+
+        <input
+          type="text"
+          name="empDesignation"
+          value={employee.empDesignation}
+          onChange={handleChange}
+          placeholder="Designation"
+        />
+
+        <input
+          type="number"
+          name="empAge"
+          value={employee.empAge}
+          onChange={handleChange}
+          placeholder="Age"
+        />
+
+        <button type="submit">{id ? "Update" : "Save"}</button>
       </form>
     </div>
   );
