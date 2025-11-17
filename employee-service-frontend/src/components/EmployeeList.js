@@ -12,7 +12,7 @@ const EmployeeList = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/employee/getAll");
+      const response = await axios.get("http://localhost:8080/employeeservice/getAll");
       setEmployees(response.data);
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -22,7 +22,7 @@ const EmployeeList = () => {
   const deleteEmployee = async (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
-        await axios.delete(`http://localhost:8080/employee/delete/${id}`);
+        await axios.delete(`http://localhost:8080/employeeservice/delete/${id}`);
         fetchEmployees();
       } catch (error) {
         console.error("Error deleting employee:", error);

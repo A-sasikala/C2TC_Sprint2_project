@@ -23,7 +23,7 @@ const EmployeeForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/employeeservice", employee);
+      await axios.post("http://localhost:8080/employeeservice/add", employee);
       alert("Employee added successfully!");
       navigate("/");
     } catch (error) {
